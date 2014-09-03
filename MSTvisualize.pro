@@ -5,10 +5,15 @@ TEMPLATE        =   app
 
 SOURCES         +=  src/main.cpp \
                     src/mainwindow.cpp \
-                    src/spantree.cpp
+                    src/spantree.cpp \
+    src/view2d.cpp \
+    src/canvas.cpp
 
 HEADERS         +=  src/mainwindow.h \
-                    src/spantree.h
+                    src/spantree.h \
+    src/view2d.h \
+    src/canvas.h
+
 
 LIBS            +=  -stdlib=libc++ -L/usr/lib -L/usr/local/lib -lCGAL -lmpfr -lgmp
 QMAKE_CXXFLAGS  +=  -stdlib=libc++

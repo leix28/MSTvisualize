@@ -1,8 +1,13 @@
 #ifndef __mainwindow_h__
 #define __mainwindow_h__
 
+#include "view2d.h"
 #include "spantree.h"
+#include "canvas.h"
+#include <QGroupBox>
 #include <QMainWindow>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QGridLayout>
 #include <QGraphicsView>
 #include <QLabel>
@@ -15,18 +20,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
-    QGridLayout *mainLayout;
-
-    QGraphicsView *canvas;
-    QGraphicsScene *scene;
-    QLabel *label;
-    QLineEdit *command;
-    QPushButton *buttonLoad;
-
-    spantree solver;
-
-private slots:
-    void slotLoad();
+    View2D *view2D;
 };
 
 #endif 

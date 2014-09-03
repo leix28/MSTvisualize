@@ -2,20 +2,31 @@
 #define __spantree_h__
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <vector>
 #include <utility>
+#include <map>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef CGAL::Delaunay_triangulation_2<K> Triangulation;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel             K;
+typedef CGAL::Triangulation_vertex_base_with_info_2<unsigned int, K>    Vb;
+typedef CGAL::Triangulation_data_structure_2<Vb>                        Tds;
+typedef CGAL::Delaunay_triangulation_2<K, Tds>                          Triangulation;
+
 typedef K::Point_2          Point_2;
 typedef K::Iso_rectangle_2  Iso_rectangle_2;
 typedef K::Segment_2        Segment_2;
 typedef K::Ray_2            Ray_2;
 typedef K::Line_2           Line_2;
 
-class spantree {
+class Spantree {
 public:
+    typedef std::pair<double, double> Point;
+    typedef std::vector<Point> Points;
+    typedef std::map<int, Point> PointIds;
+    typedef std::pair< std::map<int, Point> , std::vector< std::pair<int, int> > > Graph;
+
+private:
     struct Cropped_voronoi_from_delaunay{
         std::list<Segment_2> m_cropped_vd;
         Iso_rectangle_2 m_bbox;
@@ -34,25 +45,17 @@ public:
         void operator << (const Segment_2& seg){ crop_and_extract_segment(seg); }
     };
 
-    Triangulation dt2;
+    Triangulation triangulation;
+    std::map<int, Triangulation::Vertex_handle> indexToVertex;
+    std::map<int, Point> indexToPoint;
+    int indexMax = 0;
 
-    void insert(std::vector< std::pair<double, double> > p) {
-        std::vector<Point_2> points;
-        for (auto point : p) {
-            points.push_back(Point_2(point.first, point.second));
-        }
-        dt2.insert(points.begin(), points.end());
-    }
-    std::vector< std::pair< std::pair<double, double>, std::pair<double, double> > > get_tree() {
-        std::vector< std::pair< std::pair<double, double>, std::pair<double, double> > > rt;
-        for (auto itr = dt2.finite_edges_begin(); itr != dt2.finite_edges_end(); itr++) {
-            auto v1 = itr->first->vertex(dt2.cw(itr->second));
-            auto v2 = itr->first->vertex(dt2.ccw(itr->second));
-            rt.push_back(std::make_pair(std::make_pair(v1->point().x(), v1->point().y()),
-                                        std::make_pair(v2->point().x(), v2->point().y())));
-        }
-        return rt;
-    }
+public:
+    void insert(Points p);
+    void clear();
+    Graph getDelaunay();
+    Graph getVoronoi();
+    const PointIds& getPointIds();
 };
 
 #endif
