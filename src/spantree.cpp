@@ -1,6 +1,5 @@
 #include "spantree.h"
 #include <algorithm>
-#include <set>
 #include <boost/pending/disjoint_sets.hpp>
 #include <boost/cstdlib.hpp>
 

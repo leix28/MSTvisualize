@@ -75,7 +75,7 @@ void View2D::loadFile() {
 }
 
 void View2D::loadFileThreadUIResponce() {
-    canvas->drawPoints(solver.getPointIds());
+    canvas->getPainter()->drawPoints(solver.getPointIds());
     update();
 
     pointTable->setModel(0);
@@ -93,17 +93,15 @@ void View2D::loadFileThreadUIResponce() {
 
 void View2D::drawDelaunay() {
     auto delaunay = solver.getDelaunay();
-    canvas->drawEdges(delaunay);
+    canvas->getPainter()->drawEdges(delaunay);
 }
 
 void View2D::drawVoronoi() {
-
     auto voronoi = solver.getVoronoi();
-    canvas->drawEdges(voronoi);
-
+    canvas->getPainter()->drawEdges(voronoi);
 }
 
 void View2D::drawMSTree() {
     auto mst = solver.getMSTree();
-    canvas->drawEdges(mst);
+    canvas->getPainter()->drawEdges(mst);
 }

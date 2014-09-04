@@ -1,31 +1,32 @@
-#ifndef CANVAS_H
-#define CANVAS_H
+#ifndef __canvas_h__
+#define __canvas_h__
 
 #include "spantree.h"
 #include <QGraphicsView>
 #include <QGraphicsItemGroup>
-#include <vector>
 
 class CanvasPainter : public QGraphicsScene {
     Q_OBJECT
+
+    QGraphicsItemGroup *pointGroup, *edgeGroup;
+    void clearPoints();
+    void clearEdges();
+
 public:
     CanvasPainter(QWidget *parent = 0);
+    void drawPoints(Spantree::PointIds points);
+    void drawEdges(Spantree::Graph graph);
 };
 
 
 
 class Canvas : public QGraphicsView {
     Q_OBJECT
-public:
     CanvasPainter *painter;
-    QGraphicsItemGroup *pointGroup, *edgeGroup;
 
-    void clearPoints();
-    void clearEdges();
 public:
     Canvas(QWidget *parent = 0);
-    void drawPoints(Spantree::PointIds points);
-    void drawEdges(Spantree::Graph graph);
+    CanvasPainter* getPainter();
 };
 
 #endif // CANVAS_H
