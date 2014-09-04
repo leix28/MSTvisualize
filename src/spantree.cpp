@@ -1,6 +1,12 @@
 #include "spantree.h"
 #include <algorithm>
 #include <set>
+#include <boost/pending/disjoint_sets.hpp>
+#include <boost/cstdlib.hpp>
+
+double Spantree::dis(Spantree::Point_2 a, Spantree::Point_2 b) {
+    return (a.x() - b.x()) * (a.x() - b.x()) + (a.y() - b.y()) * (a.y() - b.y());
+}
 
 void Spantree::insert(Points p) {
 
@@ -73,6 +79,33 @@ Spantree::Graph Spantree::getVoronoi() {
     ret.second.push_back(std::make_pair(cnt - 3, cnt - 2));
     ret.second.push_back(std::make_pair(cnt - 2, cnt - 1));
     ret.second.push_back(std::make_pair(cnt - 1, cnt - 4));
+    return ret;
+}
+
+Spantree::Graph Spantree::getMSTree() {
+    using namespace boost;
+    std::vector< std::pair< double, std::pair<int, int> > > edge;
+    for (auto itr = triangulation.finite_edges_begin(); itr != triangulation.finite_edges_end(); itr++) {
+        auto v1 = itr->first->vertex(triangulation.cw(itr->second));
+        auto v2 = itr->first->vertex(triangulation.ccw(itr->second));
+        edge.push_back(std::make_pair(dis(v1->point(), v2->point()), std::make_pair(v1->info(), v2->info())));
+    }
+    sort(edge.begin(), edge.end());
+
+    disjoint_sets_with_storage<identity_property_map, identity_property_map, find_with_full_path_compression> dset(indexToPoint.size());
+    for (auto entry : indexToPoint)
+        dset.make_set(entry.first);
+
+    Graph ret;
+    for (auto itr = edge.begin(); itr != edge.end(); itr++) {
+        int v1 = dset.find_set(itr->second.first);
+        int v2 = dset.find_set(itr->second.second);
+        if (v1 != v2) {
+            dset.link(v1, v2);
+            ret.second.push_back(itr->second);
+        }
+    }
+    ret.first = indexToPoint;
     return ret;
 }
 

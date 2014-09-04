@@ -16,10 +16,9 @@ public:
 
 class Canvas : public QGraphicsView {
     Q_OBJECT
-
+public:
     CanvasPainter *painter;
-    std::vector<QGraphicsItem*> pointGroup;
-    std::vector<QGraphicsItem*> edgeGroup;
+    QGraphicsItemGroup *pointGroup, *edgeGroup;
 
     void clearPoints();
     void clearEdges();

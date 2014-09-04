@@ -64,6 +64,7 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     QObject::connect(buttonLoad, SIGNAL(clicked()), this, SLOT(loadFile()));
     QObject::connect(buttonDelaunay, SIGNAL(clicked()), this, SLOT(drawDelaunay()));
     QObject::connect(buttonVoronoi, SIGNAL(clicked()), this, SLOT(drawVoronoi()));
+    QObject::connect(buttonMSTree, SIGNAL(clicked()), this, SLOT(drawMSTree()));
     QObject::connect(this, SIGNAL(loadFileThreadFinish()), this, SLOT(loadFileThreadUIResponce()));
 }
 
@@ -96,12 +97,13 @@ void View2D::drawDelaunay() {
 }
 
 void View2D::drawVoronoi() {
+
     auto voronoi = solver.getVoronoi();
-    std::cout << "hello" << std::endl;
     canvas->drawEdges(voronoi);
 
 }
 
 void View2D::drawMSTree() {
-
+    auto mst = solver.getMSTree();
+    canvas->drawEdges(mst);
 }

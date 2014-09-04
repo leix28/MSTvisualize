@@ -6,8 +6,8 @@ TEMPLATE        =   app
 SOURCES         +=  src/main.cpp \
                     src/mainwindow.cpp \
                     src/spantree.cpp \
-    src/view2d.cpp \
-    src/canvas.cpp
+                    src/view2d.cpp \
+                    src/canvas.cpp
 
 HEADERS         +=  src/mainwindow.h \
                     src/spantree.h \
