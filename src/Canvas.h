@@ -4,6 +4,7 @@
 #include "spantree.h"
 #include <QGraphicsView>
 #include <QGraphicsItemGroup>
+#include <QGraphicsSceneMouseEvent>
 
 class CanvasPainter : public QGraphicsScene {
     Q_OBJECT
@@ -11,11 +12,19 @@ class CanvasPainter : public QGraphicsScene {
     QGraphicsItemGroup *pointGroup, *edgeGroup;
     void clearPoints();
     void clearEdges();
+    QPointF getCenter();
+    void setViewCenter(QPointF ctr);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
 public:
     CanvasPainter(QWidget *parent = 0);
     void drawPoints(Spantree::PointIds points);
     void drawEdges(Spantree::Graph graph);
+
+signals:
+    void addPoint(double x, double y);
 };
 
 

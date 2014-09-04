@@ -45,6 +45,7 @@ signals:
     void loadFileThreadFinish();
 
 public slots:
+    void addPoint(double x, double y);
     void loadFile();
     void loadFileThreadUIResponce();
     void drawDelaunay();

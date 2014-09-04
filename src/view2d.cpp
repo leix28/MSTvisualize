@@ -66,6 +66,15 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     QObject::connect(buttonVoronoi, SIGNAL(clicked()), this, SLOT(drawVoronoi()));
     QObject::connect(buttonMSTree, SIGNAL(clicked()), this, SLOT(drawMSTree()));
     QObject::connect(this, SIGNAL(loadFileThreadFinish()), this, SLOT(loadFileThreadUIResponce()));
+
+    QObject::connect(canvas->getPainter(), SIGNAL(addPoint(double, double)), this, SLOT(addPoint(double, double)));
+}
+
+void View2D::addPoint(double x, double y) {
+    Spantree::Points pts;
+    pts.push_back(std::make_pair(x, y));
+    solver.insert(pts);
+    emit loadFileThreadFinish();
 }
 
 void View2D::loadFile() {
