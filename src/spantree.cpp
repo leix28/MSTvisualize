@@ -33,6 +33,7 @@ void Spantree::clear() {
 Spantree::Graph Spantree::getDelaunay() {
     Graph ret;
     for (auto itr = triangulation.finite_edges_begin(); itr != triangulation.finite_edges_end(); itr++) {
+        if (stop) return Graph();
         auto v1 = itr->first->vertex(triangulation.cw(itr->second));
         auto v2 = itr->first->vertex(triangulation.ccw(itr->second));
         ret.second.push_back(std::make_pair(v1->info(), v2->info()));
@@ -46,6 +47,7 @@ Spantree::Graph Spantree::getVoronoi() {
     if (indexToPoint.size() < 2) return ret;
     double minx = 1e100, miny = 1e100, maxx = -1e100, maxy = -1e100;
     for (auto entry : indexToPoint) {
+        if (stop) return Graph();
         minx = std::min(minx, entry.second.first);
         miny = std::min(miny, entry.second.second);
         maxx = std::max(maxx, entry.second.first);
@@ -54,15 +56,16 @@ Spantree::Graph Spantree::getVoronoi() {
     minx -= 10; miny -= 10; maxx += 10; maxy += 10;
     Iso_rectangle_2 bbox(minx, miny, maxx, maxy);
     Cropped_voronoi_from_delaunay vor(bbox);
-
-    std::cout << "1" << std::endl;
-
-    triangulation.draw_dual(vor);
-
-    std::cout << "2" << std::endl;
+    vor.flag = &stop;
+    try {
+        triangulation.draw_dual(vor);
+    } catch(...) {
+        return Graph();
+    }
 
     int cnt = 0;
     for (auto seg : vor.m_cropped_vd) {
+        if (stop) return Graph();
         auto v1 = seg.source();
         auto v2 = seg.target();
         ret.first[cnt] = std::make_pair(v1.x(), v1.y());
@@ -85,6 +88,7 @@ Spantree::Graph Spantree::getMSTree() {
     using namespace boost;
     std::vector< std::pair< double, std::pair<int, int> > > edge;
     for (auto itr = triangulation.finite_edges_begin(); itr != triangulation.finite_edges_end(); itr++) {
+        if (stop) return Graph();
         auto v1 = itr->first->vertex(triangulation.cw(itr->second));
         auto v2 = itr->first->vertex(triangulation.ccw(itr->second));
         edge.push_back(std::make_pair(dis(v1->point(), v2->point()), std::make_pair(v1->info(), v2->info())));
@@ -92,11 +96,14 @@ Spantree::Graph Spantree::getMSTree() {
     sort(edge.begin(), edge.end());
 
     disjoint_sets_with_storage<identity_property_map, identity_property_map, find_with_full_path_compression> dset(indexToPoint.size());
-    for (auto entry : indexToPoint)
+    for (auto entry : indexToPoint) {
+        if (stop) return Graph();
         dset.make_set(entry.first);
+    }
 
     Graph ret;
     for (auto itr = edge.begin(); itr != edge.end(); itr++) {
+        if (stop) return Graph();
         int v1 = dset.find_set(itr->second.first);
         int v2 = dset.find_set(itr->second.second);
         if (v1 != v2) {

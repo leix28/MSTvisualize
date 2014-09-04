@@ -1,22 +1,10 @@
 #include "canvas.h"
 
+
 CanvasPainter::CanvasPainter(QWidget *parent) : QGraphicsScene(-500, -500, 1000, 1000, parent) {
-    std::cout << sceneRect().width() << std::endl;
-    //setBackgroundBrush(Qt::blue);
-    edgeGroup = new QGraphicsItemGroup();
-    pointGroup = new QGraphicsItemGroup();
 }
 
 
-void CanvasPainter::clearPoints() {
-    delete pointGroup;
-    pointGroup = new QGraphicsItemGroup();
-}
-
-void CanvasPainter::clearEdges() {
-    delete edgeGroup;
-    edgeGroup = new QGraphicsItemGroup();
-}
 
 QPointF CanvasPainter::getCenter() {
     const QGraphicsView* view = (QGraphicsView*) parent();
@@ -46,31 +34,47 @@ void CanvasPainter::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) 
     QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
 }
 
-void CanvasPainter::drawPoints(Spantree::PointIds points) {
+void CanvasPainter::eraseItems(QGraphicsItemGroup *items) {
+    all_mutex.lock();
     QPointF ctr = getCenter();
-
-    clearPoints();
-    clearEdges();
-
-    for (auto entry : points) {
-        pointGroup->addToGroup(new QGraphicsEllipseItem(entry.second.first - 2, entry.second.second - 2, 4, 4));
-    }
-    addItem(pointGroup);
+    if (items)
+        removeItem(items);
     setViewCenter(ctr);
+    all_mutex.unlock();
 }
 
-void CanvasPainter::drawEdges(Spantree::Graph graph) {
+
+void CanvasPainter::showItems(QGraphicsItemGroup *items) {
+    all_mutex.lock();
     QPointF ctr = getCenter();
-    clearEdges();
-    for (auto entry : graph.second) {
-        edgeGroup->addToGroup(
-                    new QGraphicsLineItem(graph.first[entry.first].first,
-                                          graph.first[entry.first].second,
-                                          graph.first[entry.second].first,
-                                          graph.first[entry.second].second));
-    }
-    addItem(edgeGroup);
+    addItem(items);
     setViewCenter(ctr);
+    all_mutex.unlock();
+}
+
+QGraphicsItemGroup *CanvasPainter::drawPoints(Spantree::PointIds points) {
+    all_mutex.lock();
+    QGraphicsItemGroup *pointGroup = new QGraphicsItemGroup();
+    for (auto entry : points) {
+        QGraphicsEllipseItem *item = new QGraphicsEllipseItem(entry.second.first - 2, entry.second.second - 2, 4, 4);
+        pointGroup->addToGroup(item);
+    }
+    all_mutex.unlock();
+    return pointGroup;
+}
+
+QGraphicsItemGroup* CanvasPainter::drawEdges(Spantree::Graph graph) {
+    all_mutex.lock();
+    QGraphicsItemGroup *edgeGroup = new QGraphicsItemGroup();
+    for (auto entry : graph.second) {
+        QGraphicsLineItem *item = new QGraphicsLineItem(graph.first[entry.first].first,
+                                                        graph.first[entry.first].second,
+                                                        graph.first[entry.second].first,
+                                                        graph.first[entry.second].second);
+        edgeGroup->addToGroup(item);
+    }
+    all_mutex.unlock();
+    return edgeGroup;
 }
 
 Canvas::Canvas(QWidget *parent) : QGraphicsView(parent) {
@@ -82,5 +86,17 @@ CanvasPainter *Canvas::getPainter() {
     return painter;
 }
 
+void Canvas::zoom(int flag) {
+    if (flag > 0)
+        scale(1.1, 1.1);
+    else
+        scale(0.9, 0.9);
+}
 
+void Canvas::zoomIn() {
+    zoom(1);
+}
 
+void Canvas::zoomOut() {
+    zoom(-1);
+}

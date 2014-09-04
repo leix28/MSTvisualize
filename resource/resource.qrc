@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>load.icns</file>
+        <file>add.icns</file>
+    </qresource>
+</RCC>

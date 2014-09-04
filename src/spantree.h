@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <mutex>
 
 class Spantree {
 public:
@@ -15,6 +16,7 @@ public:
     typedef std::vector<Point> Points;
     typedef std::map<int, Point> PointIds;
     typedef std::pair< std::map<int, Point> , std::vector< std::pair<int, int> > > Graph;
+    bool stop = 0;
 
 private:
     typedef CGAL::Exact_predicates_inexact_constructions_kernel             K;
@@ -33,19 +35,29 @@ private:
     struct Cropped_voronoi_from_delaunay{
         std::list<Segment_2> m_cropped_vd;
         Iso_rectangle_2 m_bbox;
-
+        bool *flag;
         Cropped_voronoi_from_delaunay(const Iso_rectangle_2& bbox):m_bbox(bbox){}
 
         template <class RSL>
         void crop_and_extract_segment(const RSL& rsl){
+            if (*flag) throw "exit";
             CGAL::Object obj = CGAL::intersection(rsl,m_bbox);
             const Segment_2* s = CGAL::object_cast<Segment_2>(&obj);
             if (s) m_cropped_vd.push_back(*s);
         }
 
-        void operator << (const Ray_2& ray)    { crop_and_extract_segment(ray); }
-        void operator << (const Line_2& line)  { crop_and_extract_segment(line); }
-        void operator << (const Segment_2& seg){ crop_and_extract_segment(seg); }
+        void operator << (const Ray_2& ray)    {
+            if (*flag) throw "exit";
+            crop_and_extract_segment(ray);
+        }
+        void operator << (const Line_2& line)  {
+            if (*flag) throw "exit";
+            crop_and_extract_segment(line);
+        }
+        void operator << (const Segment_2& seg){
+            if (*flag) throw "exit";
+            crop_and_extract_segment(seg);
+        }
     };
 
     std::map<int, Triangulation::Vertex_handle> indexToVertex;
