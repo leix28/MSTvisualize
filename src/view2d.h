@@ -18,7 +18,22 @@
 #include <QCheckBox>
 #include <QMenuBar>
 #include <QToolBar>
+#include <QDialog>
+#include <QDoubleSpinBox>
 #include <boost/thread/thread.hpp>
+
+class AddPointDialog : public QDialog {
+    Q_OBJECT
+    QHBoxLayout *mainLayout;
+    QVBoxLayout *vLayout;
+    QPushButton *buttonY, *buttonN;
+    QDoubleSpinBox *xpos, *ypos;
+    QLabel *xlabel, *ylabel;
+public:
+    AddPointDialog (QWidget *parent);
+    static std::pair< bool, std::pair<double, double> > getPoint(QWidget *parent);
+};
+
 
 class View2D : public QWidget {
     Q_OBJECT
@@ -27,6 +42,8 @@ class View2D : public QWidget {
     QVBoxLayout *leftLayout;
     QVBoxLayout *rightLayout;
     QHBoxLayout *leftBottomLayout;
+    QGridLayout *canvasLayout;
+    QGridLayout *guideLayout;
 
     QCheckBox *isShowInputPoints;
     QCheckBox *isShowDelaunayEdges;
@@ -34,7 +51,7 @@ class View2D : public QWidget {
     QCheckBox *isShowMSTreeEdges;
 
     Canvas *canvas;
-    QGraphicsScene *scene;
+    Guide *guide;
     QPushButton *buttonZoomIn;
     QPushButton *buttonZoomOut;
     QLabel *label;
@@ -46,6 +63,8 @@ class View2D : public QWidget {
     QGraphicsItemGroup *delaunayEdges;
     QGraphicsItemGroup *voronoiEdges;
     QGraphicsItemGroup *mSTreeEdges;
+    QPen pointPen, edgePen;
+
 
     QMenuBar *menubar;
     QToolBar *toolbar;
@@ -55,6 +74,7 @@ class View2D : public QWidget {
     boost::thread algorithmThread;
 
     void loadFileThread(std::string);
+    void addPointThread(double x, double y);
     void updateGraphItem();
 
 public:
@@ -81,6 +101,7 @@ public slots:
     void drawDelaunay(Spantree::Graph graph);
     void drawVoronoi(Spantree::Graph graph);
     void drawMSTree(Spantree::Graph graph);
+    void addPointDialog();
 };
 
 #endif

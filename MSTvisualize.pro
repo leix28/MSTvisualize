@@ -11,8 +11,8 @@ SOURCES         +=  src/main.cpp \
 
 HEADERS         +=  src/mainwindow.h \
                     src/spantree.h \
-    src/view2d.h \
-    src/canvas.h
+                    src/view2d.h \
+                    src/canvas.h
 
 
 LIBS            +=  -stdlib=libc++ -L/usr/lib -L/usr/local/lib -lCGAL -lmpfr -lgmp -lboost_thread-mt -lboost_system
@@ -22,10 +22,10 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 OBJECTS_DIR     =   build
 MOC_DIR         =   build
+RCQ_DIR         =   build
 
 
 INCLUDEPATH     +=  /usr/local/include /usr/include
 
-RESOURCES += \
-    resource/resource.qrc
+RESOURCES       +=  resource/resource.qrc
 
