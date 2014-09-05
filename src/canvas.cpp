@@ -80,7 +80,6 @@ QGraphicsItemGroup* CanvasPainter::drawEdges(Spantree::Graph graph, QPen pen) {
 }
 
 Canvas::Canvas(QWidget *parent) : QGraphicsView(parent) {
-    setViewportUpdateMode(BoundingRectViewportUpdate);
     painter = new CanvasPainter(this);
     setScene(painter);
     guide = new Guide(this);
@@ -118,7 +117,7 @@ void Canvas::resizeEvent(QResizeEvent *event) {
 
 void Canvas::paintEvent(QPaintEvent *event) {
     QGraphicsView::paintEvent(event);
-    guide->updateSceneRect(guide->scene()->sceneRect());
+    guide->viewport()->update();
 }
 
 void Canvas::zoomIn() {
@@ -133,7 +132,7 @@ void Canvas::zoomOut() {
 
 
 Guide::Guide(QWidget *parent) : QGraphicsView(parent){
-    setViewportUpdateMode(BoundingRectViewportUpdate);
+
     view = (Canvas*)parent;
 }
 
@@ -148,5 +147,5 @@ void Guide::autoFit() {
     resetTransform();
     scale((size().width() - 10) / (double)rect.width(),
           (size().height() - 10) / (double)rect.height());
-    updateSceneRect(scene()->sceneRect());
+    viewport()->update();
 }
