@@ -22,16 +22,16 @@ void View2D::loadFileThread(std::string filename) {
 
     solver.clear();
     if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
-    delete inputPoints;
+    if (inputPoints) delete inputPoints;
     inputPoints = 0;
     if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
-    delete delaunayEdges;
+    if (delaunayEdges) delete delaunayEdges;
     delaunayEdges = 0;
     if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
-    delete mSTreeEdges;
+    if (mSTreeEdges) delete mSTreeEdges;
     mSTreeEdges = 0;
     if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
-    delete voronoiEdges;
+    if (voronoiEdges) delete voronoiEdges;
     voronoiEdges = 0;
 
     solver.insert(points);
@@ -47,16 +47,16 @@ void View2D::addPointThread(double x, double y) {
     isShowMSTreeEdges->setEnabled(0);
 
     if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
-    delete inputPoints;
+    if (inputPoints) delete inputPoints;
     inputPoints = 0;
     if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
-    delete delaunayEdges;
+    if (delaunayEdges) delete delaunayEdges;
     delaunayEdges = 0;
     if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
-    delete mSTreeEdges;
+    if (mSTreeEdges) delete mSTreeEdges;
     mSTreeEdges = 0;
     if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
-    delete voronoiEdges;
+    if (voronoiEdges) delete voronoiEdges;
     voronoiEdges = 0;
 
     Spantree::Points pts;
@@ -186,27 +186,33 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
 
 View2D::~View2D() {
     solver.stop = 1;
+    t.join();
     algorithmThread.join();
 }
 
 void View2D::addPoint(double x, double y) {
     solver.stop = 1;
+    t.join();
     algorithmThread.join();
     solver.stop = 0;
-    boost::thread t = boost::thread(boost::bind(&View2D::addPointThread, this, x, y));
-    t.detach();
+    t = boost::thread(boost::bind(&View2D::addPointThread, this, x, y));
 }
 
 void View2D::loadFile() {
     QString filename = QFileDialog::getOpenFileName(this, "Load", QDir::homePath(), "Text files (*.txt)");
     solver.stop = 1;
+    t.join();
     algorithmThread.join();
     solver.stop = 0;
-    boost::thread t = boost::thread(boost::bind(&View2D::loadFileThread, this, filename.toStdString()));
-    t.detach();
+    t = boost::thread(boost::bind(&View2D::loadFileThread, this, filename.toStdString()));
 }
 
 void View2D::updateItem() {
+    solver.stop = 1;
+    t.join();
+    algorithmThread.join();
+    solver.stop = 0;
+
     algorithmThread = boost::thread(boost::bind(&View2D::updateGraphItem, this));
 
     pointTable->setModel(0);

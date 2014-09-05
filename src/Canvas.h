@@ -14,6 +14,7 @@ class Canvas;
 class CanvasPainter : public QGraphicsScene {
     Q_OBJECT
     friend class Canvas;
+    friend class Guide;
     QPointF getCenter();
     void setViewCenter(QPointF ctr);
     std::mutex all_mutex;
@@ -36,9 +37,12 @@ signals:
 class Guide : public QGraphicsView {
     Q_OBJECT
     Canvas *view;
+
 public:
     Guide(QWidget *parent);
+protected:
     void paintEvent(QPaintEvent *event);
+    void mouseMoveEvent(QMouseEvent * event);
 public slots:
     void autoFit();
 };

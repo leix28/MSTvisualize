@@ -132,7 +132,6 @@ void Canvas::zoomOut() {
 
 
 Guide::Guide(QWidget *parent) : QGraphicsView(parent){
-
     view = (Canvas*)parent;
 }
 
@@ -140,6 +139,12 @@ void Guide::paintEvent(QPaintEvent *event) {
     QPainter painter(this->viewport());
     painter.drawRect(mapFromScene(view->mapToScene(0, 0, view->size().width(), view->size().height()).boundingRect()).boundingRect());
     QGraphicsView::paintEvent(event);
+}
+
+
+void Guide::mouseMoveEvent(QMouseEvent * event) {
+    view->getPainter()->setViewCenter(mapToScene(event->pos()));
+    QGraphicsView::mouseMoveEvent(event);
 }
 
 void Guide::autoFit() {
