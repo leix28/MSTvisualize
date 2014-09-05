@@ -34,6 +34,13 @@ public:
     static std::pair< bool, std::pair<double, double> > getPoint(QWidget *parent);
 };
 
+class TableView : public QTableView {
+    Q_OBJECT
+public:
+    TableView(QWidget *parent);
+    QModelIndexList selectedIndexes() const;
+};
+
 
 class View2D : public QWidget {
     Q_OBJECT
@@ -54,9 +61,10 @@ class View2D : public QWidget {
     Guide *guide;
     QPushButton *buttonZoomIn;
     QPushButton *buttonZoomOut;
+    QPushButton *buttonErase;
     QLabel *label;
     QLineEdit *command;
-    QTableView *pointTable;
+    TableView *pointTable;
     QStandardItemModel *pointTableModel;
     Spantree solver;
     QGraphicsItemGroup *inputPoints;
@@ -72,7 +80,7 @@ class View2D : public QWidget {
     QAction *actionLoad, *actionAdd;
 
     boost::thread algorithmThread, t;
-
+    void erasePointThread(std::set<int> pts);
     void loadFileThread(std::string);
     void addPointThread(double x, double y);
     void updateGraphItem();
@@ -102,6 +110,7 @@ public slots:
     void drawVoronoi(Spantree::Graph graph);
     void drawMSTree(Spantree::Graph graph);
     void addPointDialog();
+    void erase();
 };
 
 #endif

@@ -30,6 +30,14 @@ void Spantree::clear() {
     indexMax = 0;
 }
 
+void Spantree::erase(std::set<int> pts) {
+    for (auto i : pts) {
+        triangulation.remove(indexToVertex[i]);
+        indexToVertex.erase(indexToVertex.find(i));
+        indexToPoint.erase(indexToPoint.find(i));
+    }
+}
+
 Spantree::Graph Spantree::getDelaunay() {
     Graph ret;
     for (auto itr = triangulation.finite_edges_begin(); itr != triangulation.finite_edges_end(); itr++) {
@@ -95,7 +103,7 @@ Spantree::Graph Spantree::getMSTree() {
     }
     sort(edge.begin(), edge.end());
 
-    disjoint_sets_with_storage<identity_property_map, identity_property_map, find_with_full_path_compression> dset(indexToPoint.size());
+    disjoint_sets_with_storage<identity_property_map, identity_property_map, find_with_full_path_compression> dset(indexMax);
     for (auto entry : indexToPoint) {
         if (stop) return Graph();
         dset.make_set(entry.first);

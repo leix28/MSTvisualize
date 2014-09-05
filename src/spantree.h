@@ -70,6 +70,7 @@ private:
 public:
     void insert(Points p);
     void clear();
+    void erase(std::set<int> pts);
     Graph getDelaunay();
     Graph getVoronoi();
     Graph getMSTree();
