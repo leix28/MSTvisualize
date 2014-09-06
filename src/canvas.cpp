@@ -86,8 +86,7 @@ Canvas::Canvas(QWidget *parent) : QGraphicsView(parent) {
     guide = new Guide(this);
     guide->setFixedSize(200, 200);
     guide->setScene(painter);
-    //setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    //guide->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    setRenderHints(QPainter::Antialiasing);
 }
 
 CanvasPainter* Canvas::getPainter() {

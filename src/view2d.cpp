@@ -95,6 +95,10 @@ void View2D::addPointThread(double x, double y) {
 }
 
 void View2D::updateGraphItem() {
+    if (solver.getPointIds().size() > 1000)
+        canvas->setRenderHint(QPainter::Antialiasing, 0);
+    else
+        canvas->setRenderHint(QPainter::Antialiasing, 1);
     emit drawInputPoints(solver.getPointIds());
     if (solver.stop) return;
     Spantree::Graph graph = solver.getDelaunay();
