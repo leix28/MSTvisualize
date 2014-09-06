@@ -229,30 +229,26 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
 
 View2D::~View2D() {
     solver.stop = 1;
-    t.join();
     algorithmThread.join();
 }
 
 void View2D::addPoint(double x, double y) {
     solver.stop = 1;
-    t.join();
     algorithmThread.join();
     solver.stop = 0;
-    t = boost::thread(boost::bind(&View2D::addPointThread, this, x, y));
+    addPointThread(x, y);
 }
 
 void View2D::loadFile() {
     QString filename = QFileDialog::getOpenFileName(this, "Load", QDir::homePath(), "Text files (*.txt)");
     solver.stop = 1;
-    t.join();
     algorithmThread.join();
     solver.stop = 0;
-    t = boost::thread(boost::bind(&View2D::loadFileThread, this, filename.toStdString()));
+    loadFileThread(filename.toStdString());
 }
 
 void View2D::updateItem() {
     solver.stop = 1;
-    t.join();
     algorithmThread.join();
     solver.stop = 0;
 
@@ -346,11 +342,10 @@ void View2D::erase() {
     }
 
     solver.stop = 1;
-    t.join();
     algorithmThread.join();
     solver.stop = 0;
 
-    t = boost::thread(boost::bind(&View2D::erasePointThread, this, points));
+    erasePointThread(points);
 }
 
 void View2D::highlight(std::vector<int> pts) {

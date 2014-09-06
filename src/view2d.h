@@ -84,7 +84,7 @@ class View2D : public QWidget {
     QMenu *menuFile, *menuEdit;
     QAction *actionLoad, *actionAdd, *actionZoomIn, *actionZoomOut;
 
-    boost::thread algorithmThread, t;
+    boost::thread algorithmThread;
     void erasePointThread(std::set<int> pts);
     void loadFileThread(std::string);
     void addPointThread(double x, double y);
