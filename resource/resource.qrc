@@ -4,5 +4,6 @@
         <file>add.icns</file>
         <file>zoomin.icns</file>
         <file>zoomout.icns</file>
+        <file>mst.icns</file>
     </qresource>
 </RCC>

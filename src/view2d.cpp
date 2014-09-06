@@ -324,7 +324,9 @@ void View2D::drawVoronoi(Spantree::Graph graph) {
 }
 
 void View2D::drawMSTree(Spantree::Graph graph) {
-    mSTreeEdges = canvas->getPainter()->drawEdges(graph, edgePen);
+    QPen pen(Qt::blue);
+    pen.setWidth(4);
+    mSTreeEdges = canvas->getPainter()->drawEdges(graph, pen);
     if (isShowMSTreeEdges->checkState() == Qt::Checked)
         canvas->getPainter()->showItems(mSTreeEdges);
     isShowMSTreeEdges->setEnabled(1);

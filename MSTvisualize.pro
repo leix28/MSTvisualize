@@ -22,8 +22,10 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 OBJECTS_DIR     =   build
 MOC_DIR         =   build
+RCC_DIR         =   build
 
 INCLUDEPATH     +=  /usr/local/include /usr/include
 
 RESOURCES       +=  resource/resource.qrc
 
+ICON            =   resource/mst.icns
