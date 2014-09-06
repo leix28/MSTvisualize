@@ -22,8 +22,6 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 OBJECTS_DIR     =   build
 MOC_DIR         =   build
-RCQ_DIR         =   build
-
 
 INCLUDEPATH     +=  /usr/local/include /usr/include
 

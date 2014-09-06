@@ -11,6 +11,8 @@ void Spantree::insert(Points p) {
 
     std::vector< std::pair<Point_2, int> > points;
     for (auto point : p) {
+        if (pointSet.find(point) != pointSet.end()) continue;
+        pointSet.insert(point);
         points.push_back(std::make_pair(Point_2(point.first, point.second), indexMax));
         indexToPoint[indexMax] = point;
         indexMax++;
@@ -33,6 +35,7 @@ void Spantree::clear() {
 void Spantree::erase(std::set<int> pts) {
     for (auto i : pts) {
         triangulation.remove(indexToVertex[i]);
+        pointSet.erase(pointSet.find(indexToPoint[i]));
         indexToVertex.erase(indexToVertex.find(i));
         indexToPoint.erase(indexToPoint.find(i));
     }

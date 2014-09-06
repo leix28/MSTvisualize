@@ -60,6 +60,7 @@ private:
         }
     };
 
+    std::set<Point> pointSet;
     std::map<int, Triangulation::Vertex_handle> indexToVertex;
     std::map<int, Point> indexToPoint;
     int indexMax = 0;

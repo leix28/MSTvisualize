@@ -43,6 +43,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent *event);
 public slots:
     void autoFit();
 };

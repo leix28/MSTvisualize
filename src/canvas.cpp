@@ -2,6 +2,7 @@
 #include <QDebug>
 
 CanvasPainter::CanvasPainter(QWidget *parent) : QGraphicsScene(parent) {
+    setItemIndexMethod(NoIndex);
     view = (Canvas*)parent;
 }
 
@@ -19,10 +20,10 @@ void CanvasPainter::setViewCenter(QPointF ctr) {
     rect.setTop(rect.top() - 200);
     rect.setBottom(rect.bottom() + 200);
 
-    rect.setLeft(std::min(rect.left(), ctr.rx() - view->size().width() / view->transform().m11() / 2 - 200));
-    rect.setRight(std::max(rect.right(), ctr.rx() + view->size().width() / view->transform().m11() / 2 + 200));
-    rect.setTop(std::min(rect.top(), ctr.ry() - view->size().height() / view->transform().m22() / 2 - 200));
-    rect.setBottom(std::max(rect.bottom(), ctr.ry() + view->size().height() / view->transform().m22() / 2 + 200));
+    rect.setLeft(std::min(rect.left(), ctr.rx() - view->size().width() / view->transform().m11() / 2 - 5));
+    rect.setRight(std::max(rect.right(), ctr.rx() + view->size().width() / view->transform().m11() / 2 + 5));
+    rect.setTop(std::min(rect.top(), ctr.ry() - view->size().height() / view->transform().m22() / 2 - 5));
+    rect.setBottom(std::max(rect.bottom(), ctr.ry() + view->size().height() / view->transform().m22() / 2 + 5));
 
     setSceneRect(rect);
     view->centerOn(ctr);
@@ -85,8 +86,8 @@ Canvas::Canvas(QWidget *parent) : QGraphicsView(parent) {
     guide = new Guide(this);
     guide->setFixedSize(200, 200);
     guide->setScene(painter);
-    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    guide->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    //setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    //guide->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
 CanvasPainter* Canvas::getPainter() {
@@ -138,6 +139,7 @@ Guide::Guide(QWidget *parent) : QGraphicsView(parent){
 void Guide::paintEvent(QPaintEvent *event) {
     QPainter painter(this->viewport());
     painter.drawRect(mapFromScene(view->mapToScene(0, 0, view->size().width(), view->size().height()).boundingRect()).boundingRect());
+    //painter.drawRect(mapFromScene(view->getPainter()->sceneRect()).boundingRect());
     QGraphicsView::paintEvent(event);
 }
 
@@ -147,10 +149,16 @@ void Guide::mouseMoveEvent(QMouseEvent * event) {
     QGraphicsView::mouseMoveEvent(event);
 }
 
+void Guide::mousePressEvent(QMouseEvent *event) {
+    view->getPainter()->setViewCenter(mapToScene(event->pos()));
+    QGraphicsView::mousePressEvent(event);
+}
+
 void Guide::autoFit() {
     auto rect = view->getPainter()->sceneRect();
+    double maxn = std::max(rect.width(), rect.height());
     resetTransform();
-    scale((size().width() - 10) / (double)rect.width(),
-          (size().height() - 10) / (double)rect.height());
+    scale((size().width() - 10) / maxn,
+          (size().height() - 10) / maxn);
     viewport()->update();
 }
