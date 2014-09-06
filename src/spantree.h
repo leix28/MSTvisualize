@@ -76,6 +76,7 @@ public:
     Graph getVoronoi();
     Graph getMSTree();
     const PointIds& getPointIds();
+    Point getPoint(int id);
 };
 
 #endif

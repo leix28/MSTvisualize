@@ -36,6 +36,13 @@ public:
 
 class TableView : public QTableView {
     Q_OBJECT
+
+signals:
+    void changehighlight(std::vector<int>);
+
+protected:
+    void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+
 public:
     TableView(QWidget *parent);
     QModelIndexList selectedIndexes() const;
@@ -59,8 +66,6 @@ class View2D : public QWidget {
 
     Canvas *canvas;
     Guide *guide;
-    QPushButton *buttonZoomIn;
-    QPushButton *buttonZoomOut;
     QPushButton *buttonErase;
     QLabel *label;
     QLineEdit *command;
@@ -77,13 +82,15 @@ class View2D : public QWidget {
     QMenuBar *menubar;
     QToolBar *toolbar;
     QMenu *menuFile, *menuEdit;
-    QAction *actionLoad, *actionAdd;
+    QAction *actionLoad, *actionAdd, *actionZoomIn, *actionZoomOut;
 
     boost::thread algorithmThread, t;
     void erasePointThread(std::set<int> pts);
     void loadFileThread(std::string);
     void addPointThread(double x, double y);
     void updateGraphItem();
+
+    QGraphicsItemGroup *highlightPoint = 0;
 
 public:
     QMenuBar* getMenuBar();
@@ -96,6 +103,7 @@ signals:
     void drawDelaunayEdges(Spantree::Graph);
     void drawVoronoiEdges(Spantree::Graph);
     void drawMSTreeEdges(Spantree::Graph);
+
 
 public slots:
     void addPoint(double x, double y);
@@ -111,6 +119,7 @@ public slots:
     void drawMSTree(Spantree::Graph graph);
     void addPointDialog();
     void erase();
+    void highlight(std::vector<int> pts);
 };
 
 #endif

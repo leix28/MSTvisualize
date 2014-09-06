@@ -129,3 +129,7 @@ Spantree::Graph Spantree::getMSTree() {
 const Spantree::PointIds &Spantree::getPointIds() {
     return indexToPoint;
 }
+
+Spantree::Point Spantree::getPoint(int id) {
+    return indexToPoint[id];
+}

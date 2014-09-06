@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>load.icns</file>
         <file>add.icns</file>
+        <file>zoomin.icns</file>
+        <file>zoomout.icns</file>
     </qresource>
 </RCC>

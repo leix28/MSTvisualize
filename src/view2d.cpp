@@ -12,16 +12,18 @@ void View2D::erasePointThread(std::set<int> pts) {
     isShowVoronoiEdges->setEnabled(0);
     isShowMSTreeEdges->setEnabled(0);
 
-    if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
+    //if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
     if (inputPoints) delete inputPoints;
+    delete highlightPoint;
+    highlightPoint = 0;
     inputPoints = 0;
-    if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
+    //if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
     if (delaunayEdges) delete delaunayEdges;
     delaunayEdges = 0;
-    if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
+    //if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
     if (mSTreeEdges) delete mSTreeEdges;
     mSTreeEdges = 0;
-    if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
+    //if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
     if (voronoiEdges) delete voronoiEdges;
     voronoiEdges = 0;
 
@@ -46,16 +48,18 @@ void View2D::loadFileThread(std::string filename) {
     }
 
     solver.clear();
-    if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
+    //if (isShowInputPoints->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(inputPoints);
     if (inputPoints) delete inputPoints;
     inputPoints = 0;
-    if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
+    delete highlightPoint;
+    highlightPoint = 0;
+    //if (isShowDelaunayEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(delaunayEdges);
     if (delaunayEdges) delete delaunayEdges;
     delaunayEdges = 0;
-    if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
+    //if (isShowMSTreeEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(mSTreeEdges);
     if (mSTreeEdges) delete mSTreeEdges;
     mSTreeEdges = 0;
-    if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
+    //if (isShowVoronoiEdges->checkState() == Qt::Checked) canvas->getPainter()->eraseItems(voronoiEdges);
     if (voronoiEdges) delete voronoiEdges;
     voronoiEdges = 0;
 
@@ -128,10 +132,6 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     pointPen.setWidth(2);
     edgePen.setWidth(2);
 
-    buttonZoomIn = new QPushButton("Zoom In", this);
-    buttonZoomIn->setAutoRepeat(1);
-    buttonZoomOut = new QPushButton("Zoom Out", this);
-    buttonZoomOut->setAutoRepeat(1);
     buttonErase = new QPushButton("Erase", this);
 
     pointTable = new TableView(this);
@@ -164,6 +164,15 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     actionAdd->setIcon(QIcon(":/add.icns"));
     menuEdit->addAction(actionAdd);
     toolbar->addAction(actionAdd);
+    actionZoomIn = new QAction("Zoom In", menuEdit);
+    actionZoomOut = new QAction("Zoom Out", menuEdit);
+    actionZoomIn->setIcon(QIcon(":/zoomin.icns"));
+    actionZoomOut->setIcon(QIcon(":/zoomout.icns"));
+    menuEdit->addAction(actionZoomIn);
+    menuEdit->addAction(actionZoomOut);
+    toolbar->addAction(actionZoomIn);
+    toolbar->addAction(actionZoomOut);
+
 
     outerLayout->addWidget(toolbar);
     outerLayout->addLayout(mainLayout);
@@ -183,8 +192,6 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     guideLayout->setContentsMargins(0, 0, 20, 20);
     leftBottomLayout->addWidget(label);
     leftBottomLayout->addWidget(command);
-    leftBottomLayout->addWidget(buttonZoomIn);
-    leftBottomLayout->addWidget(buttonZoomOut);
 
     pointTable->setFixedWidth(300);
     pointTable->verticalHeader()->hide();
@@ -199,13 +206,13 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
 
     QObject::connect(actionLoad, SIGNAL(triggered()), this, SLOT(loadFile()));
     QObject::connect(actionAdd, SIGNAL(triggered()), this, SLOT(addPointDialog()));
+    QObject::connect(actionZoomIn, SIGNAL(triggered()), this->canvas, SLOT(zoomIn()));
+    QObject::connect(actionZoomOut, SIGNAL(triggered()), this->canvas, SLOT(zoomOut()));
 
     QObject::connect(isShowInputPoints, SIGNAL(stateChanged(int)), this, SLOT(switchInputPoints()));
     QObject::connect(isShowDelaunayEdges, SIGNAL(stateChanged(int)), this, SLOT(switchDelaunayEdges()));
     QObject::connect(isShowMSTreeEdges, SIGNAL(stateChanged(int)), this, SLOT(switchMSTreeEdges()));
     QObject::connect(isShowVoronoiEdges, SIGNAL(stateChanged(int)), this, SLOT(switchVoronoiEdges()));
-    QObject::connect(buttonZoomIn, SIGNAL(clicked()), this->canvas, SLOT(zoomIn()));
-    QObject::connect(buttonZoomOut, SIGNAL(clicked()), this->canvas, SLOT(zoomOut()));
 
     QObject::connect(this, SIGNAL(datasetChange()), this, SLOT(updateItem()));
 
@@ -215,6 +222,8 @@ View2D::View2D(QWidget *parent) : QWidget(parent) {
     QObject::connect(this, SIGNAL(drawMSTreeEdges(Spantree::Graph)), this, SLOT(drawMSTree(Spantree::Graph)));
     QObject::connect(this, SIGNAL(drawVoronoiEdges(Spantree::Graph)), this, SLOT(drawVoronoi(Spantree::Graph)));
     QObject::connect(buttonErase, SIGNAL(clicked()), this, SLOT(erase()));
+
+    QObject::connect(pointTable, SIGNAL(changehighlight(std::vector<int>)), this, SLOT(highlight(std::vector<int>)));
 
 }
 
@@ -344,6 +353,20 @@ void View2D::erase() {
     t = boost::thread(boost::bind(&View2D::erasePointThread, this, points));
 }
 
+void View2D::highlight(std::vector<int> pts) {
+    delete highlightPoint;
+    highlightPoint = 0;
+    QPen pen(Qt::red);
+    pen.setWidth(8);
+    Spantree::PointIds points;
+    int cnt = 0;
+    for (auto i : pts) {
+        points[cnt++] = solver.getPoint(i);
+    }
+    highlightPoint = canvas->getPainter()->drawPoints(points, pen);
+    canvas->getPainter()->addItem(highlightPoint);
+}
+
 AddPointDialog::AddPointDialog(QWidget *parent) : QDialog(parent){
     buttonN = new QPushButton("No", this);
     buttonY = new QPushButton("Yes", this);
@@ -386,6 +409,17 @@ std::pair< bool, std::pair<double, double> > AddPointDialog::getPoint(QWidget *p
     }
 }
 
+
+void TableView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+    QTableView::selectionChanged(selected, deselected);
+    std::vector<int> pts;
+    for (auto index : selectedIndexes()) {
+        if (index.column() == 0) {
+            pts.push_back(index.data().toInt());
+        }
+    }
+    emit changehighlight(pts);
+}
 
 TableView::TableView(QWidget *parent) : QTableView(parent){
 

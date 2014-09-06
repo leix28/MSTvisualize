@@ -9,7 +9,7 @@ CanvasPainter::CanvasPainter(QWidget *parent) : QGraphicsScene(parent) {
 
 
 QPointF CanvasPainter::getCenter() {
-    return view->mapToScene(view->size().width() / 2 - 8, view->size().height() / 2 - 6);
+    return view->mapToScene(view->size().width() / 2, view->size().height() / 2);
 }
 
 void CanvasPainter::setViewCenter(QPointF ctr) {
@@ -20,10 +20,10 @@ void CanvasPainter::setViewCenter(QPointF ctr) {
     rect.setTop(rect.top() - 200);
     rect.setBottom(rect.bottom() + 200);
 
-    rect.setLeft(std::min(rect.left(), ctr.rx() - view->size().width() / view->transform().m11() / 2 - 5));
-    rect.setRight(std::max(rect.right(), ctr.rx() + view->size().width() / view->transform().m11() / 2 + 5));
-    rect.setTop(std::min(rect.top(), ctr.ry() - view->size().height() / view->transform().m22() / 2 - 5));
-    rect.setBottom(std::max(rect.bottom(), ctr.ry() + view->size().height() / view->transform().m22() / 2 + 5));
+    rect.setLeft(std::min(rect.left(), ctr.rx() - view->size().width() / view->transform().m11() / 2 - 10));
+    rect.setRight(std::max(rect.right(), ctr.rx() + view->size().width() / view->transform().m11() / 2 + 10));
+    rect.setTop(std::min(rect.top(), ctr.ry() - view->size().height() / view->transform().m22() / 2 - 10));
+    rect.setBottom(std::max(rect.bottom(), ctr.ry() + view->size().height() / view->transform().m22() / 2 + 10));
 
     setSceneRect(rect);
     view->centerOn(ctr);
