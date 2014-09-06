@@ -28,3 +28,9 @@ Makefile*
 *.autosave
 
 *.app/
+doc/document.aux
+doc/document.log
+doc/document.out
+doc/document.pdf
+doc/document.synctex.gz
+doc/document.toc
